@@ -1,24 +1,23 @@
 // Chage These Credentials with your Blynk Template credentials
-#define BLYNK_TEMPLATE_ID "TMPLoQJZ3ekM"
-#define BLYNK_DEVICE_NAME "Fire Detection"
-#define BLYNK_AUTH_TOKEN "y_X508aLE-ARQ7DcId7LMFE_P5_KzGhv"
+// Chage These Credentials with your Blynk Template credentials 
+#define BLYNK_TEMPLATE_ID "Template ID"
+#define BLYNK_DEVICE_NAME "Device Name"
+#define BLYNK_AUTH_TOKEN "Auth Token"
 
 #define BLYNK_PRINT Serial
-
-#include <WiFi.h>
-#include <WiFiClient.h>
-#include <BlynkSimpleEsp32.h>
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
 
 char auth[] = BLYNK_AUTH_TOKEN;
-char ssid[] = "1 Step RnD"; // Change your Wifi/ Hotspot Name
-char pass[] = "abcd@54321@"; // Change your Wifi/ Hotspot Password
+char ssid[] = "Wifi Name"; // Change your Wifi/ Hotspot Name
+char pass[] = "Wifi Password"; // Change your Wifi/ Hotspot Password
 
 BlynkTimer timer;
 
-#define fire 23
-#define GREEN 12
-#define RED 14`
-#define buzzer  13
+#define fire D2
+#define GREEN D5
+#define RED D6
+#define buzzer  D7
 int fire_Val = 0;
 
 WidgetLED led(V1);
@@ -67,7 +66,5 @@ void mySensor()
     Serial.print("fIRE Level: ");
     Serial.println(fire_Val);
     led.off();
-  }  
-
-  
+  }    
 }
