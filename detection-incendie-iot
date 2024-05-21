@@ -1,0 +1,70 @@
+// importortation de librairies nécessaires
+#include <WiFi.h>
+#include <WiFiClient.h>
+#include <BlynkESP32.h>
+
+// Définition de broches GPIO 
+#define BLYNK_TEMPLATE_ID "TMPL39krsjNT-"
+#define BLYNK_TEMPLATE_NAME "Fire Detection"
+#define BLYNK_AUTH_TOKEN "tU8gZPgZL7vGC2IO3F6H15M-keaih-2J"
+
+#define BLYNK_PRINT Serial
+
+
+// initialise des informations nécessaires
+char auth[] = BLYNK_AUTH_TOKEN;
+char ssid[] = "Wokwi-GUEST"; // Nom de votre réseau WiFi
+char pass[] = ""; // Mot de passe de votre réseau WiFi
+
+BlynkTimer timer;
+
+#define fire 23
+#define GREEN 12
+#define RED 14
+#define buzzer  13
+int fire_Val = 0;
+
+WidgetLED led(V1);
+
+void setup() {
+  Serial.begin(9600); // Initialisation de la communication série à 9600 bauds
+
+  pinMode(GREEN, OUTPUT);
+  pinMode(fire, INPUT);
+  pinMode(RED, OUTPUT);
+  pinMode(buzzer, OUTPUT);
+  
+  Blynk.begin(auth, ssid, pass); // Connexion au serveur Blynk
+  delay(2000); // Pause de 2 secondes
+  timer.setInterval(500L, mySensor); // Configuration de l'intervalle de lecture du capteur
+}
+
+void loop() {
+  Blynk.run(); // Exécution de Blynk
+  timer.run(); // Exécution du gestionnaire de tâches
+}
+
+void mySensor() {
+  fire_Val = digitalRead(fire); // Lecture de la valeur du capteur de flamme
+
+  if (fire_Val == LOW) { // Si une flamme est détectée
+    Serial.println("Fire in the House"); // Affichage du message dans le moniteur série
+   
+    Blynk.logEvent("fire_alert", "Fire Detected"); // Journalisation de l'événement dans Blynk
+    digitalWrite(GREEN, LOW); // Allumage de la LED verte
+    digitalWrite(RED, HIGH); // Extinction de la LED rouge
+    digitalWrite(buzzer, HIGH); // Activation du buzzer
+    Blynk.virtualWrite(V0, 1); // Envoi d'une valeur à l'application Blynk
+    Serial.print("Fire Level: ");
+    Serial.println(fire_Val); // Affichage du niveau de flamme dans le moniteur série
+    led.on(); // Allumage de la LED virtuelle sur l'application Blynk
+  } else {
+    digitalWrite(GREEN, HIGH); // Extinction de la LED verte
+    digitalWrite(RED, LOW); // Allumage de la LED rouge
+    digitalWrite(buzzer, LOW); // Désactivation du buzzer
+    Blynk.virtualWrite(V0, 0); // Envoi d'une valeur à l'application Blynk
+    Serial.print("Fire Level: ");
+    Serial.println(fire_Val); // Affichage du niveau de flamme dans le moniteur série
+    led.off(); // Extinction de la LED virtuelle sur l'application Blynk
+  }
+}
